@@ -10,6 +10,7 @@
             for (var swapPos = 0; swapPos < sortPos; ++swapPos) {
                 if (data[swapPos] > data[swapPos + 1]) {
                     (data[swapPos + 1], data[swapPos]) = (data[swapPos], data[swapPos + 1]);
+                    
                 }
             }
         }
