@@ -9,7 +9,7 @@
 /// </summary>
 public class TakingTurnsQueue
 {
-    private readonly PersonQueue _people = new();
+    private readonly PersonQueue _people = new PersonQueue();
 
     public int Length => _people.Length;
 
@@ -31,23 +31,35 @@ public class TakingTurnsQueue
     /// person has an infinite number of turns.  An error exception is thrown 
     /// if the queue is empty.
     /// </summary>
+    /// 
     public Person GetNextPerson()
     {
         if (_people.IsEmpty())
         {
             throw new InvalidOperationException("No one in the queue.");
         }
-        else
-        {
+        
             Person person = _people.Dequeue();
-            if (person.Turns > 1)
+
+            // checking if the person has an infinite turns (0 or less)
+            if (person.Turns <= 0)
             {
-                person.Turns -= 1;
+            // keep the person in the queue indefinitely
                 _people.Enqueue(person);
             }
-
+            else 
+            {
+                // decrease the turns and reenque
+                person.Turns -= 1; 
+                // re-enqueue if still have turns left
+                if (person.Turns > 0)
+                {
+                    _people.Enqueue(person);
+                }
+                
+            }
+            // if the person turn reach 1, they will not be re-enqueued (last turn)
             return person;
-        }
     }
 
     public override string ToString()
