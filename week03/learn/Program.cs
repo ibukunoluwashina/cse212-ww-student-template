@@ -8,6 +8,6 @@ public class Program
         DuplicateCounter.Run();
 
         Console.WriteLine("\n======================\nTranslator\n======================");
-        Translator.Run();
+        TranslatorSolution.Run();
     }
 }

@@ -1,7 +1,10 @@
+using System.Globalization;
 using System.Text.Json;
 
 public static class SetsAndMaps
 {
+    private static object census;
+
     /// <summary>
     /// The words parameter contains a list of two character 
     /// words (lower case, no duplicates). Using sets, find an O(n) 
@@ -22,7 +25,28 @@ public static class SetsAndMaps
     public static string[] FindPairs(string[] words)
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        // Create a Hashset to store the wrds
+        HashSet<string> seen = new HashSet<string>();
+        // This will store the symmetric pair
+        List<string> result = new List<string>();
+
+        foreach (string word in words)
+        {
+            // Reverse the word
+            string reverse = new string(new Char[] { word[1], word[0] });
+            // Check if the reverse is aready in the set
+            if (seen.Contains(reverse))
+            {
+                // if reverse is in the pair add the symmetric pair
+                result.Add($"{reverse} & {word}");
+            }
+            else
+            {
+                // Add the word to the set
+                seen.Add(word);
+            }
+        }
+        return result.ToArray();
     }
 
     /// <summary>
@@ -38,13 +62,36 @@ public static class SetsAndMaps
     /// <returns>fixed array of divisors</returns>
     public static Dictionary<string, int> SummarizeDegrees(string filename)
     {
-        var degrees = new Dictionary<string, int>();
-        foreach (var line in File.ReadLines(filename))
-        {
-            var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
-        }
 
+            // Initialize the dictionary to hold the degree summary
+            var degrees = new Dictionary<string, int>();
+
+            // Read each line from the file
+            foreach(var line in File.ReadLines(filename))
+            {
+                // Splitting lines by commas to get the column 
+                var fields = line.Split(",");
+
+                // Ensure the line has at least 4 column to avoid index out range errors
+                if(fields.Length < 4)
+                continue;
+
+                // Get the degree from the 4th column (index 3)
+                var degree = fields[3].Trim();
+
+                // Update the dictionary: Increment count if degree exist, otherwise add new entry 
+                if (degrees.ContainsKey(degree))
+                {
+                    degrees[degree]++;
+                }
+                else
+                {
+                    degrees[degree] = 1;
+                }
+            }
+
+        // Redturn degree summary
         return degrees;
     }
 
@@ -67,8 +114,70 @@ public static class SetsAndMaps
     public static bool IsAnagram(string word1, string word2)
     {
         // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+
+        // step 2: Normalize the words (convert to lowercase and remove the space)
+        word1 = word1.Replace(" ", "").ToLower();
+        word2 = word2.Replace(" ", "").ToLower();
+
+        // step2: if the length are different, they cannot be anagram 
+        if(word1.Length != word2.Length)
+        {
+            return false;
+        }
+
+        // Step 3: Create dictionaries to count the frequency of each letter
+        var letterCount1 = new Dictionary<char, int>();
+        var letterCount2 = new Dictionary<char, int>();
+
+        // Step 4: Populate the dictionaries with letter frequencies 
+        foreach (var letter in word1)
+        {
+            if (letterCount1.ContainsKey(letter))
+            {
+                letterCount1[letter]++;
+            }
+            else
+            {
+                letterCount1[letter] = 1;
+            }
+        }
+
+        foreach(var letter in word2)
+        {
+            if (letterCount2.ContainsKey(letter))
+            {
+                letterCount2[letter]++;
+            }
+            else
+            {
+                letterCount2[letter] = 1;
+            }
+        }
+
+        // step 5: Compare the two dictionaries
+        return DictionaryEquals(letterCount1, letterCount2);
     }
+
+    // Helper method to compare two dictionaries 
+    private static bool DictionaryEquals(Dictionary<char, int> dict1, Dictionary<char, int> dict2)
+    {
+        if (dict1.Count != dict2.Count)
+        {
+            return false;
+        }
+
+        foreach (var kvp in dict1)
+        {
+            if (!dict2.ContainsKey(kvp.Key) || dict2[kvp.Key] != kvp.Value)
+            {
+                return false;
+            }
+        }
+
+        return true;
+        }
+    
+
 
     /// <summary>
     /// This function will read JSON (Javascript Object Notation) data from the 
@@ -101,6 +210,22 @@ public static class SetsAndMaps
         // on those classes so that the call to Deserialize above works properly.
         // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
         // 3. Return an array of these string descriptions.
-        return [];
+
+        // Create a list to hold the formatted earthquaks information
+        var earthquakeSummaries = new List<string>();
+
+        foreach(var feature in featureCollection.Features)
+        {
+            var magnitude = feature.Properties.Mag;
+            var place = feature.Properties.Place;
+
+            // Only include earthquakes with both a magnitude and place defined 
+            if (magnitude.HasValue && !string.IsNullOrEmpty(place))
+            {
+                // Format the earthquake information into a string
+                earthquakeSummaries.Add($"{place} - Mag {magnitude.Value}");
+            }
+        }
+        return earthquakeSummaries.ToArray();
     }
 }

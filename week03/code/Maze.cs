@@ -20,7 +20,7 @@ public class Maze
     private int _currX = 1;
     private int _currY = 1;
 
-    public Maze(Dictionary<ValueTuple<int, int>, bool[]> mazeMap)
+    public Maze(Dictionary<(int, int), bool[]> mazeMap)
     {
         _mazeMap = mazeMap;
     }
@@ -33,6 +33,16 @@ public class Maze
     public void MoveLeft()
     {
         // FILL IN CODE
+        // check if we can move left at the current location 
+        // left is at index 0
+        if (_mazeMap[(_currX, _currY)][0])
+        {
+            _currX--;
+        }
+        else
+        {
+            throw new InvalidOperationException("Can't go that way!");
+        }
     }
 
     /// <summary>
@@ -42,6 +52,17 @@ public class Maze
     public void MoveRight()
     {
         // FILL IN CODE
+        // Check if we can move right at the current location 
+        // right is at index 1
+        if (_mazeMap[(_currX, _currY)][1])
+        {
+            // Move right (increement x)
+            _currX++;
+        }
+        else
+        {
+            throw new InvalidOperationException("Can't go that way!");
+        }
     }
 
     /// <summary>
@@ -51,6 +72,17 @@ public class Maze
     public void MoveUp()
     {
         // FILL IN CODE
+        // Check if we can move up at the current location 
+        // Up is at index 2
+        if (_mazeMap[(_currX, _currY)][2])
+        {
+            // Move up (decrement y)
+            _currY--;
+        }
+        else
+        {
+            throw new InvalidOperationException("Can't go that way!");
+        }
     }
 
     /// <summary>
@@ -60,6 +92,17 @@ public class Maze
     public void MoveDown()
     {
         // FILL IN CODE
+        // Check if we can move uo at the current location
+        // down is at index 3
+        if(_mazeMap[(_currX, _currY)][3])
+        {
+            // move down (increment y)
+            _currY++;
+        }
+        else
+        {
+            throw new InvalidOperationException("Can't go that way!");
+        }
     }
 
     public string GetStatus()
