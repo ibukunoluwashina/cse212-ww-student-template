@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Formats.Asn1;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Interfaces;
 
 public class LinkedList : IEnumerable<int>
 {
@@ -33,6 +35,24 @@ public class LinkedList : IEnumerable<int>
     public void InsertTail(int value)
     {
         // TODO Problem 1
+        // Create a new node
+        Node newNode = new(value);
+        // If the list is empty, then point both head and tail to the new node.
+        if (_tail is null)
+        {
+            _head = newNode;
+            _tail = newNode;
+        }
+        // If the list is not empty only tail will be affected
+        else
+        {
+            // connect the node to the prev tail
+            newNode.Prev = _tail; 
+            // connect the tail to the new node
+            _tail.Next = newNode;
+            // Update the tail to point to the new node
+            _tail = newNode;
+        }
     }
 
 
@@ -65,6 +85,18 @@ public class LinkedList : IEnumerable<int>
     public void RemoveTail()
     {
         // TODO Problem 2
+        if (_tail == _head)
+        {
+            _head = null;
+            _tail = null;
+        }
+        // If the list has more than one item in it, then only the tail
+        // will be affected.
+        else if (_tail is not null)
+        { 
+            _tail.Prev!.Next = null; // Disconnect the second node from the first node
+            _tail = _tail.Prev; // Update the tail to point to the second node
+        }
     }
 
     /// <summary>
@@ -109,6 +141,41 @@ public class LinkedList : IEnumerable<int>
     public void Remove(int value)
     {
         // TODO Problem 3
+        Node? curr = _head;
+
+        // Check the list to find the node containing value
+        while (curr != null)
+        {
+            if (curr.Data == value)
+            {
+                // Case1: If the node to be removed is the head 
+                if (curr == _head)
+                {
+                    // Reuse the removeHead function
+                    RemoveHead();
+                }
+                // Case 2: If the node to be removed is the tail
+                else if (curr == _tail)
+                {
+                    // Reuse the removeTail function
+                    RemoveTail();
+                }
+                // Case 3: If the node is somewhere in the middle
+                else
+                {
+                    // Connect the previous node to the next node
+                    curr.Prev!.Next = curr.Next; 
+                    if (curr.Next != null)
+                    {
+                        // Connect the next node to the previous node
+                        curr.Next.Prev = curr.Prev;
+                    }
+                }
+
+                return; // We can exit the function after removing the node
+            }
+            curr = curr.Next; // Go to the next node in the list
+        }
     }
 
     /// <summary>
@@ -117,6 +184,20 @@ public class LinkedList : IEnumerable<int>
     public void Replace(int oldValue, int newValue)
     {
         // TODO Problem 4
+        // Start at the end of the list
+        Node? curr = _tail;
+        // Move through the entire list
+        while (curr != null)
+        {
+            // If the current node's data equals the oldValue
+            if (curr.Data == oldValue)
+            {
+                // Replace the value with newValue
+                curr.Data = newValue;
+            }
+            // Move to the next node in the list
+            curr = curr.Prev;
+        }
     }
 
     /// <summary>
@@ -147,7 +228,21 @@ public class LinkedList : IEnumerable<int>
     public IEnumerable Reverse()
     {
         // TODO Problem 5
-        yield return 0; // replace this line with the correct yield return statement(s)
+        // Create a temporary stack to hold the node
+        Stack<int> stack = new Stack<int>();
+
+        // Transverse the list and push the value onto the stack
+        Node? curr = _head;
+        while (curr != null)
+        {
+            stack.Push(curr.Data);
+            curr = curr.Next;
+        }
+        // Yield value from the stack (this will be a reverse order)
+        while (stack.Count > 0)
+        {
+            yield return stack.Pop();
+        }
     }
 
     public override string ToString()
